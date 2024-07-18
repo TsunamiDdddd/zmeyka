@@ -1,8 +1,11 @@
+
+using System.Diagnostics;
+
 namespace zmeyka
 {
     public partial class Form1 : Form
     {
-        private int rI, rJ;
+        private int rI, rJ,randX,randY;
         private PictureBox[] snake = new PictureBox[400];
         private PictureBox[] obstacle = new PictureBox[6];
         private Label labelScore;
@@ -15,7 +18,11 @@ namespace zmeyka
         public int numberofobstacles;
 
         private PictureBox fruite;
-        public Form1()
+        Stopwatch stopWatch = new Stopwatch();
+
+
+        public Form1(int intervalofmove, int numberofobstacles)
+
         {
             InitializeComponent();
 
@@ -33,14 +40,20 @@ namespace zmeyka
             labelScore.Text = "Score: 0";
             labelScore.Location = new Point(810, 10);
             this.Controls.Add(labelScore);
-
+            this.numberofobstacles = numberofobstacles;
+            this.intervalofmove = intervalofmove;
             _generateMap();
+
+            _generateObstacles(numberofobstacles);
+
             _generateFruit();
             timer1.Tick += new EventHandler(_update);
-
+            timer1.Interval = intervalofmove;
             timer1.Start();
             this.KeyDown += new KeyEventHandler(OKP);
             label1.Text = timer1.Interval.ToString();
+            stopWatch.Start();
+
         }
 
         private void _generateFruit()
@@ -53,6 +66,21 @@ namespace zmeyka
             int tempJ = rJ % _sizeofsides;
             rJ -= tempJ;
             fruite.Location = new Point(rI, rJ);
+
+            for (int i = 0; i < numberofobstacles; i++)
+            {
+                if (fruite.Bounds.IntersectsWith(obstacle[i].Bounds))
+                {
+                    rI = r.Next(0, _width - _sizeofsides);
+                    tempI = rI % _sizeofsides;
+                    rI -= tempI;
+                    rJ = r.Next(0, _width - _sizeofsides);
+                    tempJ = rJ % _sizeofsides;
+                    rJ -= tempJ;
+                    fruite.Location = new Point(rI, rJ);
+                }
+            }
+
             this.Controls.Add(fruite);
 
         }
@@ -70,9 +98,25 @@ namespace zmeyka
                 rJ = r.Next(0, _width - _sizeofsides);
                 int tempJ = rJ % _sizeofsides;
                 rJ -= tempJ;
-                obstacle[0].Location = new Point(rI, rJ);
-                obstacle[0].BackColor = Color.Brown;
-                this.Controls.Add(obstacle[0]);
+                randX = r.Next(1, 5);
+                randY = r.Next(1, 5);
+                int tempX = randX/ 1;
+                int tempY = randY/ 1;
+                obstacle[i].Size = new Size(_sizeofsides*tempX, _sizeofsides * tempY);
+                if (obstacle[0].Bounds.IntersectsWith(snake[0].Bounds))
+                {
+                    rI = r.Next(0, _width - _sizeofsides);
+                    tempI = rI % _sizeofsides;
+                    rI -= tempI;
+                    rJ = r.Next(0, _width - _sizeofsides);
+                    tempI = rJ % _sizeofsides;
+                    rJ -= tempJ;
+                }
+                obstacle[i].Location = new Point(rI, rJ);
+                obstacle[i].BackColor = Color.Brown;
+                this.Controls.Add(obstacle[i]);
+
+
             }
         }
         private void _eatFrute()
@@ -111,7 +155,7 @@ namespace zmeyka
         private bool EatMySelf()
         {
             int count = 0;
-            if (score > 2)
+            if (score > 1)
 
             {
                 for (int i = score; i >= 1; i--)
@@ -124,8 +168,34 @@ namespace zmeyka
             }
             if (count > 0) { return true; }
             else { return false; }
-
-        } // EatMySelf      
+        }// EatMySelf
+        private bool CollisionWithObstacle(int numberofobstacles)
+        {
+            int count = 0;
+            if (numberofobstacles > 0)
+            {
+                for (int i = 0; i < numberofobstacles; i++)
+                {
+                    if (snake[0].Bounds.IntersectsWith(obstacle[i].Bounds))
+                    {
+                        count++;
+                    }
+                }
+            }
+            if (count > 0) { return true; }
+            else { return false; }
+        }
+        private bool CrossingBorder()
+        {
+            if (snake[0].Location.X < 0 || snake[0].Location.Y < 0 || snake[0].Location.X > 800 || snake[0].Location.Y >800)
+            {
+                return true;
+            }
+            else 
+            {
+                return false;
+            }
+        }
         private void _moveSnake()
         {
             for (int i = score; i >= 1; i--)
@@ -137,8 +207,12 @@ namespace zmeyka
         }
         private void _gameOver()
         {
-            if (EatMySelf())
+            if (EatMySelf() || CollisionWithObstacle(numberofobstacles)||CrossingBorder())
             {
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                Form3 form3 = new Form3(intervalofmove,numberofobstacles,score,ts);
+                form3.Show();
                 Close();
             }
         }
@@ -148,6 +222,8 @@ namespace zmeyka
             _eatFrute();
             _moveSnake();
             EatMySelf();
+            CollisionWithObstacle(numberofobstacles);
+            CrossingBorder();
             _gameOver();
 
 
