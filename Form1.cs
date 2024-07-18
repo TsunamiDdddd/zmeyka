@@ -191,6 +191,8 @@ namespace zmeyka
         {
             if (EatMySelf() || CollisionWithObstacle(numberofobstacles)||CrossingBorder())
             {
+                Form3 form3 = new Form3();
+                form3.Show();
                 Close();
             }
         }

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
+using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
 using System.Text;
@@ -29,7 +30,7 @@ namespace zmeyka
 
         private void buttontable_Click(object sender, EventArgs e)
         {
-
+            Process.Start("notepad.exe",Path.Combine( Directory.GetCurrentDirectory(),"Table.txt"));
         }
 
         private void buttonclose_Click(object sender, EventArgs e)
