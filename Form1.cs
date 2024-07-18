@@ -1,9 +1,11 @@
 
+using System.Diagnostics;
+
 namespace zmeyka
 {
     public partial class Form1 : Form
     {
-        private int rI, rJ;
+        private int rI, rJ,randX,randY;
         private PictureBox[] snake = new PictureBox[400];
         private PictureBox[] obstacle = new PictureBox[6];
         private Label labelScore;
@@ -16,6 +18,7 @@ namespace zmeyka
         public int numberofobstacles;
 
         private PictureBox fruite;
+        Stopwatch stopWatch = new Stopwatch();
 
 
         public Form1(int intervalofmove, int numberofobstacles)
@@ -49,6 +52,8 @@ namespace zmeyka
             timer1.Start();
             this.KeyDown += new KeyEventHandler(OKP);
             label1.Text = timer1.Interval.ToString();
+            stopWatch.Start();
+
         }
 
         private void _generateFruit()
@@ -93,7 +98,20 @@ namespace zmeyka
                 rJ = r.Next(0, _width - _sizeofsides);
                 int tempJ = rJ % _sizeofsides;
                 rJ -= tempJ;
-
+                randX = r.Next(1, 5);
+                randY = r.Next(1, 5);
+                int tempX = randX/ 1;
+                int tempY = randY/ 1;
+                obstacle[i].Size = new Size(_sizeofsides*tempX, _sizeofsides * tempY);
+                if (obstacle[0].Bounds.IntersectsWith(snake[0].Bounds))
+                {
+                    rI = r.Next(0, _width - _sizeofsides);
+                    tempI = rI % _sizeofsides;
+                    rI -= tempI;
+                    rJ = r.Next(0, _width - _sizeofsides);
+                    tempI = rJ % _sizeofsides;
+                    rJ -= tempJ;
+                }
                 obstacle[i].Location = new Point(rI, rJ);
                 obstacle[i].BackColor = Color.Brown;
                 this.Controls.Add(obstacle[i]);
@@ -191,7 +209,9 @@ namespace zmeyka
         {
             if (EatMySelf() || CollisionWithObstacle(numberofobstacles)||CrossingBorder())
             {
-                Form3 form3 = new Form3();
+                stopWatch.Stop();
+                TimeSpan ts = stopWatch.Elapsed;
+                Form3 form3 = new Form3(intervalofmove,numberofobstacles,score,ts);
                 form3.Show();
                 Close();
             }
