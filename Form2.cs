@@ -13,6 +13,7 @@ namespace zmeyka
     public partial class Form2 : Form
     {
         public int indexspeed = 0;
+        public int indexlevel = 0;
         public Form2()
         {
             InitializeComponent();
@@ -20,8 +21,9 @@ namespace zmeyka
 
         public void buttonstart_Click(object sender, EventArgs e)
         {
-            Form1 f1 = new Form1();
-            f1.timer1.Interval = 100 * (indexspeed + 5);
+            int intervalofmove = 100 * (5 - indexspeed);
+            int numberofobstacles = indexlevel;
+            Form1 f1 = new(intervalofmove, numberofobstacles);
             f1.Show();
         }
 
@@ -37,13 +39,12 @@ namespace zmeyka
 
         private void listBoxlevel_SelectedIndexChanged(object sender, EventArgs e)
         {
-
+            indexlevel = listBoxlevel.SelectedIndex;
         }
 
         private void listBoxspeed_SelectedIndexChanged(object sender, EventArgs e)
         {
             indexspeed = listBoxspeed.SelectedIndex;
-            label3.Text = indexspeed.ToString();
         }
     }
 }
