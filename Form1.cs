@@ -187,7 +187,7 @@ namespace zmeyka
         }
         private bool CrossingBorder()
         {
-            if (snake[0].Location.X < 0 || snake[0].Location.Y < 0 || snake[0].Location.X > 800 || snake[0].Location.Y >800)
+            if (snake[0].Location.X < 0 || snake[0].Location.Y < 0 || snake[0].Location.X >= 800 || snake[0].Location.Y >=800)
             {
                 return true;
             }
