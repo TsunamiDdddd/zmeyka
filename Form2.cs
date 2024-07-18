@@ -23,7 +23,7 @@ namespace zmeyka
         public void buttonstart_Click(object sender, EventArgs e)
         {
             int intervalofmove = 100 * (5 - indexspeed);
-            int numberofobstacles = indexlevel;
+            int numberofobstacles = indexlevel+1;
             Form1 f1 = new(intervalofmove, numberofobstacles);
             f1.Show();
         }
